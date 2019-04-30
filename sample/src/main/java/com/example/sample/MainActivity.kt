@@ -31,7 +31,9 @@ class MainActivity : AppCompatActivity() {
 
         // WRITE
         writeButton.setOnClickListener {
-            Seguro.Editor()
+            seguro.Editor()
+                .put(TIME_KEY, Date().toString())
+                .put(TIME_KEY, Date().toString())
                 .put(TIME_KEY, Date().toString())
                 .apply()
 
