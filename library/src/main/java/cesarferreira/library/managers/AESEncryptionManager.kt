@@ -6,10 +6,39 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-class EncryptionManager {
+
+class AESEncryptionManager {
+
+    /**
+     * Encrypt text with a symmetric key
+     *
+     * @param password symmetric key
+     * @param plainText text to encrypt
+     * @return encrypted plain text in hex
+     */
+    fun encrypt(password: String, plainText: String): String {
+        return encryptToByteArray(password, plainText).toHex()
+    }
+
+    /**
+     * Decrypt text with a symmetric key
+     *
+     * @param password symmetric key
+     * @param hexEncryptedText encrypted text in hex
+     * @return decrypted text
+     */
+    fun decrypt(password: String, hexEncryptedText: String): String {
+        return decryptFromByteArray(password, hexEncryptedText.hexToByteArray())
+    }
+
+    private fun ByteArray.toHex() =
+        this.joinToString(separator = "") { it.toInt().and(0xff).toString(16).padStart(2, '0') }
+
+    private fun String.hexToByteArray() =
+        ByteArray(this.length / 2) { this.substring(it * 2, it * 2 + 2).toInt(16).toByte() }
 
     @Throws(Exception::class)
-    fun encrypt(key: String, plainText: String): ByteArray {
+    private fun encryptToByteArray(key: String, plainText: String): ByteArray {
         val clean = plainText.toByteArray()
 
         // Generating IV.
@@ -40,7 +69,7 @@ class EncryptionManager {
     }
 
     @Throws(Exception::class)
-    fun decrypt(key: String, encryptedIvTextBytes: ByteArray): String {
+    private fun decryptFromByteArray(key: String, encryptedIvTextBytes: ByteArray): String {
         val ivSize = 16
         val keySize = 16
 

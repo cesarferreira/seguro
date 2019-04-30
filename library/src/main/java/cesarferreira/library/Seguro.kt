@@ -4,7 +4,7 @@ import android.Manifest
 import android.app.Application
 import android.content.Context
 import androidx.annotation.RequiresPermission
-import cesarferreira.library.managers.EncryptionManager
+import cesarferreira.library.managers.AESEncryptionManager
 import cesarferreira.library.managers.FileManager
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -13,7 +13,7 @@ import java.security.NoSuchAlgorithmException
 class Seguro private constructor(
     private val config: Config,
     private val fileManager: FileManager,
-    private val encryptionManager: EncryptionManager
+    private val encryptionManager: AESEncryptionManager
 ) {
 
     fun clear() {
@@ -137,7 +137,7 @@ class Seguro private constructor(
         }
 
         fun build(): Seguro {
-            val encryptionManager = EncryptionManager()
+            val encryptionManager = AESEncryptionManager()
             val fileManager = FileManager(config.folderName, config.password)
 
             return Seguro(config, fileManager, encryptionManager)
