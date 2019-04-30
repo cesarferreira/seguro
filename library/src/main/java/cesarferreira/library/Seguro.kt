@@ -4,27 +4,37 @@ import android.Manifest
 import android.app.Application
 import android.content.Context
 import androidx.annotation.RequiresPermission
-import java.io.File
+import cesarferreira.library.managers.EncryptionManager
+import cesarferreira.library.managers.FileManager
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
-class Seguro private constructor(private val config: Config) {
+
+class Seguro private constructor(
+    private val config: Config,
+    private val fileManager: FileManager,
+    private val encryptionManager: EncryptionManager
+) {
 
     fun clear() {
     }
 
     fun getString(key: String): String? {
-        // TODO get it from a FILESYSTEM
-        return hashKey(key)
+        return fileManager.readFromFile(hashKey(key))
     }
-
 
     private fun encryptValue(value: String): String {
-        // TODO do extra stuff
-        return value
+        return if (config.encryptValue) {
+//            encryptionManager.encrypt()
+            value
+        } else {
+            value
+
+        }
     }
 
-   private fun hashKey(key: String): String {
+
+    private fun hashKey(key: String): String {
         if (config.encryptKey) {
             try {
                 val HEX_CHARS = "0123456789ABCDEF"
@@ -41,7 +51,6 @@ class Seguro private constructor(private val config: Config) {
             } catch (e: NoSuchAlgorithmException) {
                 e.printStackTrace()
             }
-
         }
 
         return key
@@ -61,7 +70,6 @@ class Seguro private constructor(private val config: Config) {
         fun put(key: String, value: Int) {
             put(key, Integer.toString(value))
         }
-
 
         fun put(key: String, value: Long) {
             put(key, java.lang.Long.toString(value))
@@ -90,10 +98,6 @@ class Seguro private constructor(private val config: Config) {
         @RequiresPermission(
             allOf = [Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE]
         )
-        fun put(key: String, file: File?, deleteOldFile: Boolean): File? {
-            return null
-        }
-
         fun apply() {
 
             // TODO write them to a filesystem
@@ -116,7 +120,6 @@ class Seguro private constructor(private val config: Config) {
 
         private val config = Config()
 
-
         fun enableCrypto(encryptKey: Boolean, encryptValue: Boolean): Builder {
             config.encryptKey = encryptKey
             config.encryptValue = encryptValue
@@ -134,8 +137,10 @@ class Seguro private constructor(private val config: Config) {
         }
 
         fun build(): Seguro {
-            // TODO BUILD stuff
-            return Seguro(config)
+            val encryptionManager = EncryptionManager()
+            val fileManager = FileManager(config.folderName, config.password)
+
+            return Seguro(config, fileManager, encryptionManager)
         }
     }
 

@@ -30,7 +30,4 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 
-    // encryption
-    implementation "com.goterl.lazycode:lazysodium-android:3.6.1@aar"
-    implementation "net.java.dev.jna:jna:4.5.2@aar"
 }

@@ -7,22 +7,18 @@ import androidx.appcompat.app.AppCompatActivity
 import cesarferreira.library.Seguro
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
-import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import com.karumi.dexter.listener.single.PermissionListener
-
+import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
 
     private val seguro by lazy {
         Seguro.Builder(this)
-            .enableCrypto(false, true)
+            .enableCrypto(encryptKey = true, encryptValue = true)
             .setPassword("Password@123")
             .setFolderName("CESAR_FILES_BITCH")
             .build()
