@@ -1,66 +1,35 @@
 package cesarferreira.library
 
-import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Application
-import android.content.Context
 import androidx.annotation.RequiresPermission
+import androidx.annotation.VisibleForTesting
 import cesarferreira.library.managers.AESEncryptionManager
 import cesarferreira.library.managers.FileManager
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 
-class Seguro private constructor(
+class Seguro @VisibleForTesting private constructor(
     private val config: Config,
     private val fileManager: FileManager,
     private val encryptionManager: AESEncryptionManager
 ) {
 
     fun clear() {
+        fileManager.wipeData()
     }
 
     fun getString(key: String): String? {
-        return fileManager.readFromFile(hashKey(key))
+        val fromFile = fileManager.readFromFile(hashKey(key))
+        return decryptValue(fromFile!!)
     }
-
-    private fun encryptValue(value: String): String {
-        return if (config.encryptValue) {
-//            encryptionManager.encrypt()
-            value
-        } else {
-            value
-
-        }
-    }
-
-
-    private fun hashKey(key: String): String {
-        if (config.encryptKey) {
-            try {
-                val HEX_CHARS = "0123456789ABCDEF"
-                val md = MessageDigest.getInstance("SHA-256").digest(key.toByteArray());
-                val result = StringBuilder(md.size * 2)
-
-                md.forEach {
-                    val i = it.toInt()
-                    result.append(HEX_CHARS[i shr 4 and 0x0f])
-                    result.append(HEX_CHARS[i and 0x0f])
-                }
-                return result.toString()
-
-            } catch (e: NoSuchAlgorithmException) {
-                e.printStackTrace()
-            }
-        }
-
-        return key
-    }
-
 
     // EDITOR
     inner class Editor {
 
-        private var pendingWrites = HashMap<String, Any>()
+        private var pendingWrites = HashMap<String, String>()
 
         fun put(key: String, value: String): Editor {
             pendingWrites[hashKey(key)] = encryptValue(value)
@@ -95,14 +64,12 @@ class Seguro private constructor(
             put(key, String(bytes))
         }
 
-        @RequiresPermission(
-            allOf = [Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE]
-        )
+        @RequiresPermission(allOf = [READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE])
         fun apply() {
+            // persist
+            pendingWrites.forEach { fileManager.persist(it.key, it.value) }
 
-            // TODO write them to a filesystem
-
-            // wipe them
+            // wipe pending writes
             pendingWrites = hashMapOf()
         }
 
@@ -116,7 +83,7 @@ class Seguro private constructor(
     )
 
     // BUILDER
-    class Builder(context: Context) {
+    class Builder {
 
         private val config = Config()
 
@@ -138,10 +105,49 @@ class Seguro private constructor(
 
         fun build(): Seguro {
             val encryptionManager = AESEncryptionManager()
-            val fileManager = FileManager(config.folderName, config.password)
+            val fileManager = FileManager(config.folderName)
 
             return Seguro(config, fileManager, encryptionManager)
         }
+    }
+
+
+    private fun encryptValue(value: String): String {
+        return if (config.encryptValue) {
+            encryptionManager.encrypt(config.password, value)
+        } else {
+            value
+        }
+    }
+
+    private fun decryptValue(value: String): String {
+        return if (config.encryptValue) {
+            encryptionManager.decrypt(config.password, value)
+        } else {
+            value
+        }
+    }
+
+    private fun hashKey(key: String): String {
+        if (config.encryptKey) {
+            try {
+                val HEX_CHARS = "0123456789ABCDEF"
+                val md = MessageDigest.getInstance("SHA-256").digest(key.toByteArray())
+                val result = StringBuilder(md.size * 2)
+
+                md.forEach {
+                    val i = it.toInt()
+                    result.append(HEX_CHARS[i shr 4 and 0x0f])
+                    result.append(HEX_CHARS[i and 0x0f])
+                }
+                return result.toString()
+
+            } catch (e: NoSuchAlgorithmException) {
+                e.printStackTrace()
+            }
+        }
+
+        return key
     }
 
 

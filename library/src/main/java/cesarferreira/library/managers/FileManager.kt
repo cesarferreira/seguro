@@ -3,18 +3,22 @@ package cesarferreira.library.managers
 import android.os.Environment
 import java.io.File
 
-class FileManager(private val mainDirectoryName: String, password: String) {
+open class FileManager(private val mainDirectoryName: String) {
 
     init {
         makeFileDirectory()
     }
 
-    fun write(key: String, value: String): Boolean {
+    fun persist(key: String, value: String): Boolean {
         return true
     }
 
-    fun readFromFile(key: String): String? {
+    open fun readFromFile(key: String): String? {
         return null
+    }
+
+    fun wipeData() {
+
     }
 
     private fun makeDirectory(): String {

@@ -17,7 +17,7 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private val seguro by lazy {
-        Seguro.Builder(this)
+        Seguro.Builder()
             .enableCrypto(encryptKey = true, encryptValue = true)
             .setPassword("Password@123")
             .setFolderName("CESAR_FILES_BITCH")
