@@ -5,6 +5,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+
         
     }
     dependencies {
@@ -19,7 +20,9 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+        maven {
+            url  "https://dl.bintray.com/terl/lazysodium-maven"
+        }
     }
 }
 
