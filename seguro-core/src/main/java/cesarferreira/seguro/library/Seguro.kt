@@ -22,17 +22,14 @@ class Seguro private constructor(
 
     /**
      * Wipes everything from persistence
-     *
      */
-    fun clear() {
-        persistenceManager.wipe()
-    }
+    fun clear() = persistenceManager.wipe()
 
+    @CheckResult
     fun getString(key: String): String? {
         val fromFile = persistenceManager.read(hashKey(key))
-        return decryptValue(fromFile!!)
+        return fromFile?.let { decryptValue(it) }
     }
-
 
     @CheckResult
     fun getInt(key: String): Int? {
@@ -139,14 +136,13 @@ class Seguro private constructor(
 
     @CheckResult
     fun getBoolean(key: String): Boolean? {
-        try {
+        return try {
             val value = getString(key)
-            return value != null && java.lang.Boolean.parseBoolean(value)
+            value != null && java.lang.Boolean.parseBoolean(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Boolean data type", e)
-            return false
+            false
         }
-
     }
 
     @CheckResult
@@ -159,7 +155,6 @@ class Seguro private constructor(
             throwRunTimeException("Unable to convert to Boolean data type", e)
             return false
         }
-
     }
 
     // EDITOR
@@ -226,7 +221,7 @@ class Seguro private constructor(
 
         private val config = Config()
 
-        fun enableCrypto(encryptKey: Boolean, encryptValue: Boolean): Builder {
+        fun enableEncryption(encryptKey: Boolean, encryptValue: Boolean): Builder {
             config.encryptKey = encryptKey
             config.encryptValue = encryptValue
             return this

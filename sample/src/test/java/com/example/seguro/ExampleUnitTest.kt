@@ -1,4 +1,4 @@
-package com.example.sample
+package com.example.seguro
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.example.sample
+package com.example.seguro
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -18,10 +18,10 @@ class MainActivity : AppCompatActivity() {
 
     private val seguro by lazy {
         Seguro.Builder()
-            .enableCrypto(encryptKey = true, encryptValue = true)
+            .enableEncryption(encryptKey = true, encryptValue = true)
             .setPassword("Password@123")
-//            .setPersistentType(Seguro.PersistenceType.InMemory)
-//            .setFolderName(".${BuildConfig.APPLICATION_ID}")
+            .setPersistentType(Seguro.PersistenceType.InMemory)
+            .setFolderName(".${BuildConfig.APPLICATION_ID}")
             .build()
     }
 
@@ -34,10 +34,12 @@ class MainActivity : AppCompatActivity() {
 
         // READ
         readButton.setOnClickListener {
+            textView.text = ""
             textView.text = seguro.getString(TIME_KEY) ?: "cant find the TIME"
         }
 
         wipeButton.setOnClickListener {
+            textView.text = "all data wiped"
             seguro.clear()
         }
 
@@ -45,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         writeButton.setOnClickListener {
             seguro.Editor()
                 .put(TIME_KEY, Date().toString())
-                .put(NAME_KEY, "cesar ferreira")
+                .put(NAME_KEY, "Cesar Ferreira")
                 .apply()
 
             textView.text = "I WROTE TO PERSISTENCE"
