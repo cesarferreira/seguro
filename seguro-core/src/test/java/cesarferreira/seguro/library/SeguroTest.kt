@@ -6,6 +6,7 @@ import cesarferreira.seguro.library.persistance.PersistenceManager
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.lang.reflect.Constructor
+import java.util.*
 
 
 class SeguroTest {
@@ -13,7 +14,7 @@ class SeguroTest {
     private val defaultConfig = Seguro.Builder.Config(
         encryptKey = false,
         encryptValue = false,
-        folderName = "asd",
+        folderName = ".com.example.seguro",
         password = "password123",
         persistenceType = Seguro.PersistenceType.InMemory
     )
@@ -31,12 +32,39 @@ class SeguroTest {
         })
 
         // WHEN
-        seguro.Editor().put(NAME_KEY, stringToEncrypt).commit()
+        seguro.Editor().put(KEY_NAME, stringToEncrypt).commit()
 
         // THEN
-        val decrypted = seguro.getString(NAME_KEY)
+        val decrypted = seguro.getString(KEY_NAME)
 
         decrypted shouldEqual stringToEncrypt
+
+    }
+
+    @Test
+    fun `Write and retrieve various different types of values`() {
+
+        // GIVEN
+        val name = "Cesar Ferreira"
+        val age = 31
+        val time = Date().time
+
+        val seguro = buildSeguroWithParams(defaultConfig.apply {
+            encryptValue = true
+            encryptKey = true
+        })
+
+        // WHEN
+        seguro.Editor()
+            .put(KEY_TIME, time)
+            .put(KEY_NAME, name)
+            .put(KEY_AGE, age)
+            .commit()
+
+        // THEN
+        seguro.getLong(KEY_TIME) shouldEqual time
+        seguro.getString(KEY_NAME) shouldEqual name
+        seguro.getInt(KEY_AGE) shouldEqual age
 
     }
 
@@ -51,10 +79,10 @@ class SeguroTest {
         })
 
         // WHEN
-        seguro.Editor().put(NAME_KEY, stringToEncrypt).commit()
+        seguro.Editor().put(KEY_NAME, stringToEncrypt).commit()
 
         // THEN
-        val decrypted = seguro.getString(NAME_KEY)
+        val decrypted = seguro.getString(KEY_NAME)
 
         decrypted shouldEqual stringToEncrypt
     }
@@ -71,31 +99,16 @@ class SeguroTest {
         })
 
         // WHEN
-        seguro.Editor().put(NAME_KEY, stringToEncrypt).commit()
+        seguro.Editor().put(KEY_NAME, stringToEncrypt).commit()
 
         // THEN
-        val decrypted = seguro.getString(NAME_KEY)
+        val decrypted = seguro.getString(KEY_NAME)
 
         decrypted shouldEqual stringToEncrypt
     }
 
-    private fun makeSeguro(
-        persistenceManagerMock: PersistenceManager,
-        customConfig: Seguro.Builder.Config
-    ): Seguro {
-        val constructor: Constructor<Seguro> = Seguro::class.java.getDeclaredConstructor(
-            Seguro.Builder.Config::class.java,
-            PersistenceManager::class.java,
-            AESEncryptionManager::class.java
-        )
-
-        constructor.isAccessible = true
-
-        return constructor.newInstance(customConfig, persistenceManagerMock, aesEncryptionManager)
-    }
-
     private fun buildSeguroWithParams(testConfig: Seguro.Builder.Config): Seguro {
-        
+
         val persistenceManagerMock = InMemoryPersistence()
 
         val constructor: Constructor<Seguro> = Seguro::class.java.getDeclaredConstructor(
@@ -110,6 +123,8 @@ class SeguroTest {
     }
 
     companion object {
-        const val NAME_KEY = "NAME_KEY"
+        const val KEY_NAME = "KEY_NAME"
+        const val KEY_TIME = "KEY_TIME"
+        const val KEY_AGE = "KEY_AGE"
     }
 }

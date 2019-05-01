@@ -28,9 +28,9 @@ class MainActivity : AppCompatActivity() {
 
         seguro = Seguro.Builder()
             .enableEncryption(encryptKey = true, encryptValue = true)
-            .setPassword("Password@123")
+            .setEncryptPassword("Password@123")
             .setFolderName(".${BuildConfig.APPLICATION_ID}")
-            .setPersistentType(Seguro.PersistenceType.SdCard)
+            .setPersistentType(Seguro.PersistenceType.SDCard)
 //            .setPersistentType(Seguro.PersistenceType.InMemory)
 //            .setPersistentType(Seguro.PersistenceType.SharedPreferences(applicationContext))
             .build()

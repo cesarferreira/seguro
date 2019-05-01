@@ -1,7 +1,6 @@
 package cesarferreira.seguro.library
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.CheckResult
 import cesarferreira.seguro.library.encryption.AESEncryptionManager
 import cesarferreira.seguro.library.persistance.InMemoryPersistence
@@ -10,7 +9,6 @@ import cesarferreira.seguro.library.persistance.SdCardPersistence
 import cesarferreira.seguro.library.persistance.SharedPrefPersistence
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
-import java.util.*
 
 
 class Seguro private constructor(
@@ -226,7 +224,7 @@ class Seguro private constructor(
             return this
         }
 
-        fun setPassword(password: String): Builder {
+        fun setEncryptPassword(password: String): Builder {
             config.password = password
             return this
         }
@@ -254,7 +252,7 @@ class Seguro private constructor(
                     (config.persistenceType as PersistenceType.SharedPreferences).context,
                     BuildConfig.APPLICATION_ID
                 )
-                is PersistenceType.SdCard -> SdCardPersistence(config.folderName)
+                is PersistenceType.SDCard -> SdCardPersistence(config.folderName)
                 is PersistenceType.InMemory -> InMemoryPersistence()
             }
 
@@ -306,7 +304,7 @@ class Seguro private constructor(
     sealed class PersistenceType {
         object None : PersistenceType()
         data class SharedPreferences(val context: Context) : PersistenceType()
-        object SdCard : PersistenceType()
+        object SDCard : PersistenceType()
         object InMemory : PersistenceType()
     }
 }
