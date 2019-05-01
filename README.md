@@ -15,7 +15,7 @@
 ```kotlin
 seguro = Seguro.Builder()
     .enableEncryption(encryptKey = true, encryptValue = true)
-    .setPassword("Password@123")
+    .setEncryptPassword("*QdfKPoRE[gC*vtqVxZ2Eg]ZM7TeWnHyYT")
     .setFolderName(".${BuildConfig.APPLICATION_ID}")
     .setPersistentType(Seguro.PersistenceType.SDCard)
 	//.setPersistentType(Seguro.PersistenceType.InMemory)
