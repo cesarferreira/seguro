@@ -1,10 +1,8 @@
 package cesarferreira.seguro.library
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Context
+import android.util.Log
 import androidx.annotation.CheckResult
-import androidx.annotation.RequiresPermission
 import cesarferreira.seguro.library.encryption.AESEncryptionManager
 import cesarferreira.seguro.library.persistance.InMemoryPersistence
 import cesarferreira.seguro.library.persistance.PersistenceManager
@@ -12,6 +10,7 @@ import cesarferreira.seguro.library.persistance.SdCardPersistence
 import cesarferreira.seguro.library.persistance.SharedPrefPersistence
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.util.*
 
 
 class Seguro private constructor(
@@ -160,43 +159,43 @@ class Seguro private constructor(
     // EDITOR
     inner class Editor {
 
-        private var pendingWrites = HashMap<String, String>()
+        private var pendingWrites = hashMapOf<String, String>()
 
         fun put(key: String, value: String): Editor {
             pendingWrites[hashKey(key)] = encryptValue(value)
             return this
         }
 
-        fun put(key: String, value: Int) {
-            put(key, Integer.toString(value))
+        fun put(key: String, value: Int): Editor {
+            return put(key, Integer.toString(value))
         }
 
-        fun put(key: String, value: Long) {
-            put(key, java.lang.Long.toString(value))
+        fun put(key: String, value: Long): Editor {
+            return put(key, java.lang.Long.toString(value))
         }
 
-        fun put(key: String, value: Double) {
-            put(key, java.lang.Double.toString(value))
+        fun put(key: String, value: Double): Editor {
+            return put(key, java.lang.Double.toString(value))
         }
 
-        fun put(key: String, value: Float) {
-            put(key, java.lang.Float.toString(value))
+        fun put(key: String, value: Float): Editor {
+            return put(key, java.lang.Float.toString(value))
         }
 
-        fun put(key: String, value: Boolean) {
-            put(key, java.lang.Boolean.toString(value))
+        fun put(key: String, value: Boolean): Editor {
+            return put(key, java.lang.Boolean.toString(value))
         }
 
-        fun put(key: String, value: List<*>) {
-            put(key, value.toString())
+        fun put(key: String, value: List<*>): Editor {
+            return put(key, value.toString())
         }
 
-        fun put(key: String, bytes: ByteArray) {
-            put(key, String(bytes))
+        fun put(key: String, bytes: ByteArray): Editor {
+            return put(key, String(bytes))
         }
 
-        @RequiresPermission(allOf = [READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE])
-        fun apply() {
+        fun commit() {
+
             // write
             pendingWrites.forEach {
                 println("key: ${it.key}, value: ${it.value}")
@@ -204,7 +203,7 @@ class Seguro private constructor(
             }
 
             // wipe pending writes
-            pendingWrites = hashMapOf()
+            pendingWrites.clear()
         }
     }
 
@@ -265,7 +264,7 @@ class Seguro private constructor(
 
     private fun encryptValue(value: String): String {
         return if (config.encryptValue) {
-            encryptionManager.encrypt(config.password, value)
+            return encryptionManager.encrypt(config.password, value)
         } else {
             value
         }

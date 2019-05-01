@@ -15,7 +15,7 @@ open class InMemoryPersistence : PersistenceManager {
 
     @Synchronized
     override fun wipe(): Boolean {
-        map = hashMapOf()
+        map.clear()
         return true
     }
 
