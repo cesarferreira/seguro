@@ -1,8 +1,6 @@
 # seguro 
 
-<p align="center">
-Secure persistence (<strong>Memory/SharedPreferences/SDCard</strong>) using <strong>AES+CBC encryption</strong> on Android with no dependencies. 
-</p>
+> Secure persistence (<strong>Memory/SharedPreferences/SDCard</strong>) using <strong>AES+CBC encryption</strong> on Android with no dependencies. 
 
 <p align="center">
   <img src="extras/builder.png" width="100%" />
