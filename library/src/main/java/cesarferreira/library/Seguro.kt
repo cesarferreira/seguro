@@ -4,14 +4,13 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Application
 import androidx.annotation.RequiresPermission
-import androidx.annotation.VisibleForTesting
 import cesarferreira.library.managers.AESEncryptionManager
 import cesarferreira.library.managers.FileManager
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 
-class Seguro @VisibleForTesting private constructor(
+class Seguro private constructor(
     private val config: Config,
     private val fileManager: FileManager,
     private val encryptionManager: AESEncryptionManager
@@ -67,7 +66,10 @@ class Seguro @VisibleForTesting private constructor(
         @RequiresPermission(allOf = [READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE])
         fun apply() {
             // persist
-            pendingWrites.forEach { fileManager.persist(it.key, it.value) }
+            pendingWrites.forEach {
+                println("key: ${it.key}, value: ${it.value}")
+                fileManager.persist(it.key, it.value)
+            }
 
             // wipe pending writes
             pendingWrites = hashMapOf()
