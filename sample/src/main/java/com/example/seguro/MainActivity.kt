@@ -20,8 +20,9 @@ class MainActivity : AppCompatActivity() {
         Seguro.Builder()
             .enableEncryption(encryptKey = true, encryptValue = true)
             .setPassword("Password@123")
-            .setPersistentType(Seguro.PersistenceType.InMemory)
-            .setFolderName(".${BuildConfig.APPLICATION_ID}")
+            .setFolderName("${BuildConfig.APPLICATION_ID}")
+            .setPersistentType(Seguro.PersistenceType.SdCard)
+//            .setPersistentType(Seguro.PersistenceType.InMemory)
             .build()
     }
 
@@ -72,7 +73,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         internal var TIME_KEY = "KEY_TIME"
         internal var NAME_KEY = "KEY_NAME"
-
     }
 }
 

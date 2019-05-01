@@ -2,31 +2,58 @@ package cesarferreira.seguro.library.persistance
 
 import android.os.Environment
 import java.io.File
+import java.io.InputStream
 
 open class SdCardPersistence(private val mainDirectoryName: String) : PersistenceManager {
+
+    private val baseDir = File(Environment.getExternalStorageDirectory(), mainDirectoryName)
 
     @Synchronized
     override fun write(key: String, value: String): Boolean {
         createDirectoryIfDoesntExist()
+        val targetFile = getFileByKey(key)
 
-        return true
+        targetFile.writeText(value)
+
+        return targetFile.exists()
     }
 
     @Synchronized
     override fun read(key: String): String? {
-        return null
+
+        val file = getFileByKey(key)
+
+        if (!file.exists()) return null
+
+        return try {
+            val inputStream: InputStream = file.inputStream()
+            inputStream.bufferedReader().use { it.readText() }
+        } catch (exp: Exception) {
+            exp.printStackTrace()
+            null
+        }
     }
 
-    override fun wipe() = true
+    private fun getFileByKey(key: String): File = File("$baseDir/$key")
+
+    override fun wipe(): Boolean {
+        deleteRecursive(baseDir)
+        return !baseDir.exists()
+    }
+
+    private fun deleteRecursive(fileOrDirectory: File) {
+        if (fileOrDirectory.isDirectory) {
+            fileOrDirectory.listFiles().forEach { deleteRecursive(it) }
+        }
+
+        fileOrDirectory.delete()
+    }
 
     private fun createDirectoryIfDoesntExist(): String {
-
         val fullDirectory = "$mainDirectoryName/"
 
-        val dir = File(Environment.getExternalStorageDirectory(), mainDirectoryName)
-        if (!dir.exists() || !dir.isDirectory) dir.mkdirs()
+        if (!baseDir.exists() || !baseDir.isDirectory) baseDir.mkdirs()
 
         return fullDirectory
     }
-
 }
