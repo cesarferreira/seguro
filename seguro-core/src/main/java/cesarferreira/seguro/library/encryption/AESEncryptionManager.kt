@@ -31,8 +31,17 @@ class AESEncryptionManager {
         return decryptFromByteArray(password, hexEncryptedText.hexToByteArray())
     }
 
-    private fun ByteArray.toHex() =
-        this.joinToString(separator = "") { it.toInt().and(0xff).toString(16).padStart(2, '0') }
+    private val digits = "0123456789ABCDEF"
+
+    fun ByteArray.toHex(): String {
+        val hexChars = CharArray(this.size * 2)
+        for (i in this.indices) {
+            val v = this[i].toInt() and 0xff
+            hexChars[i * 2] = digits[v shr 4]
+            hexChars[i * 2 + 1] = digits[v and 0xf]
+        }
+        return String(hexChars)
+    }
 
     private fun String.hexToByteArray() =
         ByteArray(this.length / 2) { this.substring(it * 2, it * 2 + 2).toInt(16).toByte() }

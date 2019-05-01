@@ -1,10 +1,8 @@
 package cesarferreira.seguro.library
 
 import cesarferreira.seguro.library.encryption.AESEncryptionManager
+import cesarferreira.seguro.library.persistance.InMemoryPersistence
 import cesarferreira.seguro.library.persistance.PersistenceManager
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import org.amshove.kluent.any
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.lang.reflect.Constructor
@@ -16,7 +14,8 @@ class SeguroTest {
         encryptKey = false,
         encryptValue = false,
         folderName = "asd",
-        password = "password123"
+        password = "password123",
+        persistenceType = Seguro.PersistenceType.InMemory
     )
 
     private val aesEncryptionManager = AESEncryptionManager()
@@ -27,12 +26,12 @@ class SeguroTest {
         // GIVEN
         val stringToEncrypt = "i am such a secret"
 
-        val seguro = buildSeguroWithParams(stringToEncrypt, defaultConfig.apply {
+        val seguro = buildSeguroWithParams(defaultConfig.apply {
             encryptValue = true
         })
 
         // WHEN
-        seguro.Editor().put(NAME_KEY, stringToEncrypt).apply()
+        seguro.Editor().put(NAME_KEY, stringToEncrypt).commit()
 
         // THEN
         val decrypted = seguro.getString(NAME_KEY)
@@ -47,12 +46,12 @@ class SeguroTest {
         // GIVEN
         val stringToEncrypt = "i am such a secret"
 
-        val seguro = buildSeguroWithParams(stringToEncrypt, defaultConfig.apply {
+        val seguro = buildSeguroWithParams(defaultConfig.apply {
             encryptValue = false
         })
 
         // WHEN
-        seguro.Editor().put(NAME_KEY, stringToEncrypt).apply()
+        seguro.Editor().put(NAME_KEY, stringToEncrypt).commit()
 
         // THEN
         val decrypted = seguro.getString(NAME_KEY)
@@ -66,13 +65,13 @@ class SeguroTest {
         // GIVEN
         val stringToEncrypt = "i am such a secret"
 
-        val seguro = buildSeguroWithParams(stringToEncrypt, defaultConfig.apply {
+        val seguro = buildSeguroWithParams(defaultConfig.apply {
             encryptKey = true
             encryptValue = true
         })
 
         // WHEN
-        seguro.Editor().put(NAME_KEY, stringToEncrypt).apply()
+        seguro.Editor().put(NAME_KEY, stringToEncrypt).commit()
 
         // THEN
         val decrypted = seguro.getString(NAME_KEY)
@@ -95,20 +94,19 @@ class SeguroTest {
         return constructor.newInstance(customConfig, persistenceManagerMock, aesEncryptionManager)
     }
 
-    private fun buildSeguroWithParams(stringToEncrypt: String, testConfig: Seguro.Builder.Config): Seguro {
+    private fun buildSeguroWithParams(testConfig: Seguro.Builder.Config): Seguro {
+        
+        val persistenceManagerMock = InMemoryPersistence()
 
-        val valueFromFile = if (testConfig.encryptValue) {
-            aesEncryptionManager.encrypt(testConfig.password, stringToEncrypt)
-        } else {
-            stringToEncrypt
-        }
+        val constructor: Constructor<Seguro> = Seguro::class.java.getDeclaredConstructor(
+            Seguro.Builder.Config::class.java,
+            PersistenceManager::class.java,
+            AESEncryptionManager::class.java
+        )
 
-        val fileManagerMock = mock<PersistenceManager> {
-            on { read(any()) } doReturn valueFromFile
-            on { write(any(), any()) } doReturn true
-        }
+        constructor.isAccessible = true
 
-        return makeSeguro(fileManagerMock, testConfig)
+        return constructor.newInstance(testConfig, persistenceManagerMock, aesEncryptionManager)
     }
 
     companion object {

@@ -3,6 +3,7 @@ package com.example.seguro
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import cesarferreira.seguro.library.Seguro
 import com.karumi.dexter.Dexter
@@ -16,15 +17,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val seguro by lazy {
-        Seguro.Builder()
-            .enableEncryption(encryptKey = true, encryptValue = true)
-            .setPassword("Password@123")
-            .setFolderName("${BuildConfig.APPLICATION_ID}")
-            .setPersistentType(Seguro.PersistenceType.SdCard)
-//            .setPersistentType(Seguro.PersistenceType.InMemory)
-            .build()
-    }
+    private lateinit var seguro: Seguro
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,10 +26,26 @@ class MainActivity : AppCompatActivity() {
 
         checkPermissions()
 
+        seguro = Seguro.Builder()
+            .enableEncryption(encryptKey = true, encryptValue = true)
+            .setPassword("Password@123")
+            .setFolderName(".${BuildConfig.APPLICATION_ID}")
+            .setPersistentType(Seguro.PersistenceType.SdCard)
+//            .setPersistentType(Seguro.PersistenceType.InMemory)
+//            .setPersistentType(Seguro.PersistenceType.SharedPreferences(applicationContext))
+            .build()
+
         // READ
         readButton.setOnClickListener {
+
+            val timeDelta = TimeDelta()
+            val result = seguro.getString(TIME_KEY) ?: "cant find the TIME"
+            timeDelta.finish()
+
+            Log.d("TIME", "READ: " + timeDelta.delta.toString() + " ms")
+
             textView.text = ""
-            textView.text = seguro.getString(TIME_KEY) ?: "cant find the TIME"
+            textView.text = result
         }
 
         wipeButton.setOnClickListener {
@@ -46,10 +55,17 @@ class MainActivity : AppCompatActivity() {
 
         // WRITE
         writeButton.setOnClickListener {
+
+            val timeDelta = TimeDelta()
+
             seguro.Editor()
-                .put(TIME_KEY, Date().toString())
+                .put(TIME_KEY, Date().time)
                 .put(NAME_KEY, "Cesar Ferreira")
-                .apply()
+                .commit()
+
+            timeDelta.finish()
+
+            Log.d("TIME", "WRITE: " + timeDelta.delta.toString() + " ms")
 
             textView.text = "I WROTE TO PERSISTENCE"
         }
