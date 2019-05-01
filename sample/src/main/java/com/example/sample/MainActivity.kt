@@ -4,7 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import cesarferreira.library.Seguro
+import cesarferreira.seguro.library.Seguro
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -21,17 +21,16 @@ class MainActivity : AppCompatActivity() {
             .enableCrypto(encryptKey = true, encryptValue = true)
             .setPassword("Password@123")
             .setFolderName("CESAR_FILES_BITCH")
+            .setPersistentType(Seguro.PersistenceType.SharedPreferences(applicationContext))
             .build()
     }
 
-    @SuppressLint("MissingPermission") // TODO PAY ATTENTION TO ME
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         checkPermissions()
-
-//        seguro.clear()
 
         // READ
         readButton.setOnClickListener {
@@ -47,8 +46,6 @@ class MainActivity : AppCompatActivity() {
 
             textView.text = "I WROTE STUFF"
         }
-
-//        Log.d("seguro", "" + seguro.total)
     }
 
     private fun checkPermissions() {
@@ -57,13 +54,11 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ).withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport) {/* ... */
-                }
-
+                override fun onPermissionsChecked(report: MultiplePermissionsReport) {}
                 override fun onPermissionRationaleShouldBeShown(
                     permissions: List<PermissionRequest>,
                     token: PermissionToken
-                ) {/* ... */
+                ) {
                 }
             }).check()
     }

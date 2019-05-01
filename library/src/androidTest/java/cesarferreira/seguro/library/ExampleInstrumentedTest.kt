@@ -1,4 +1,4 @@
-package cesarferreira.library
+package cesarferreira.seguro.library
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4

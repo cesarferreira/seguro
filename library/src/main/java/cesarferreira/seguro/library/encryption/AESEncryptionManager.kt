@@ -1,4 +1,4 @@
-package cesarferreira.library.managers
+package cesarferreira.seguro.library.encryption
 
 import java.security.MessageDigest
 import java.security.SecureRandom

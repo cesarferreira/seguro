@@ -1,27 +1,29 @@
-package cesarferreira.library
+package cesarferreira.seguro.library
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.app.Application
+import android.content.Context
 import androidx.annotation.RequiresPermission
-import cesarferreira.library.managers.AESEncryptionManager
-import cesarferreira.library.managers.FileManager
+import cesarferreira.seguro.library.encryption.AESEncryptionManager
+import cesarferreira.seguro.library.persistance.FileManager
+import cesarferreira.seguro.library.persistance.SdCardFileManagerImpl
+import cesarferreira.seguro.library.persistance.SharedPrefFileManagerImpl
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 
 class Seguro private constructor(
-    private val config: Config,
+    private val config: Builder.Config,
     private val fileManager: FileManager,
     private val encryptionManager: AESEncryptionManager
 ) {
 
     fun clear() {
-        fileManager.wipeData()
+        fileManager.wipe()
     }
 
     fun getString(key: String): String? {
-        val fromFile = fileManager.readFromFile(hashKey(key))
+        val fromFile = fileManager.read(hashKey(key))
         return decryptValue(fromFile!!)
     }
 
@@ -65,27 +67,27 @@ class Seguro private constructor(
 
         @RequiresPermission(allOf = [READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE])
         fun apply() {
-            // persist
+            // write
             pendingWrites.forEach {
                 println("key: ${it.key}, value: ${it.value}")
-                fileManager.persist(it.key, it.value)
+                fileManager.write(it.key, it.value)
             }
 
             // wipe pending writes
             pendingWrites = hashMapOf()
         }
-
     }
-
-    internal data class Config(
-        var encryptKey: Boolean = false,
-        var encryptValue: Boolean = false,
-        var password: String = "",
-        var folderName: String = ""
-    )
 
     // BUILDER
     class Builder {
+
+        internal data class Config(
+            var encryptKey: Boolean = false,
+            var encryptValue: Boolean = false,
+            var password: String = "",
+            var folderName: String = "",
+            var persistenceType: PersistenceType = PersistenceType.None
+        )
 
         private val config = Config()
 
@@ -105,12 +107,37 @@ class Seguro private constructor(
             return this
         }
 
+        fun setPersistentType(type: PersistenceType): Builder {
+            config.persistenceType = type
+            return this
+        }
+
         fun build(): Seguro {
             val encryptionManager = AESEncryptionManager()
-            val fileManager = FileManager(config.folderName)
+            val fileManager = when (config.persistenceType) {
+                is PersistenceType.None -> object :
+                    FileManager {
+                    override fun write(key: String, value: String): Boolean = true
+                    override fun read(key: String): String? = null
+                    override fun wipe() = true
+                }
+                is PersistenceType.SharedPreferences -> SharedPrefFileManagerImpl(
+                    (config.persistenceType as PersistenceType.SharedPreferences).context,
+                    BuildConfig.APPLICATION_ID
+                )
+                is PersistenceType.SdCard -> SdCardFileManagerImpl(
+                    config.folderName
+                )
+            }
 
             return Seguro(config, fileManager, encryptionManager)
         }
+    }
+
+    sealed class PersistenceType {
+        object None : PersistenceType()
+        data class SharedPreferences(val context: Context) : PersistenceType()
+        object SdCard : PersistenceType()
     }
 
 
@@ -152,11 +179,4 @@ class Seguro private constructor(
         return key
     }
 
-
-    companion object {
-
-        @JvmStatic
-        fun init(application: Application) {
-        }
-    }
 }
