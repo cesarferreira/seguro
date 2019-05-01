@@ -20,6 +20,10 @@ class Seguro private constructor(
     private val encryptionManager: AESEncryptionManager
 ) {
 
+    /**
+     * Wipes everything from persistence
+     *
+     */
     fun clear() {
         persistenceManager.wipe()
     }

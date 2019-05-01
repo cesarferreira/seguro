@@ -20,8 +20,8 @@ class MainActivity : AppCompatActivity() {
         Seguro.Builder()
             .enableCrypto(encryptKey = true, encryptValue = true)
             .setPassword("Password@123")
-            .setFolderName("CESAR_FILES_BITCH")
-            .setPersistentType(Seguro.PersistenceType.InMemory)
+//            .setPersistentType(Seguro.PersistenceType.InMemory)
+//            .setFolderName(".${BuildConfig.APPLICATION_ID}")
             .build()
     }
 
@@ -34,17 +34,21 @@ class MainActivity : AppCompatActivity() {
 
         // READ
         readButton.setOnClickListener {
-            textView.text = seguro.getString(TIME_KEY) ?: "cant find shit"
+            textView.text = seguro.getString(TIME_KEY) ?: "cant find the TIME"
+        }
+
+        wipeButton.setOnClickListener {
+            seguro.clear()
         }
 
         // WRITE
         writeButton.setOnClickListener {
             seguro.Editor()
                 .put(TIME_KEY, Date().toString())
-                .put("name", "cesar ferreira")
+                .put(NAME_KEY, "cesar ferreira")
                 .apply()
 
-            textView.text = "I WROTE STUFF"
+            textView.text = "I WROTE TO PERSISTENCE"
         }
     }
 
@@ -65,6 +69,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         internal var TIME_KEY = "KEY_TIME"
+        internal var NAME_KEY = "KEY_NAME"
 
     }
 }
