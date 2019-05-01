@@ -7,9 +7,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/cesarferreira/seguro/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
   
-  <a href="https://travis-ci.org/cesarferreira/seguro"><img src="https://travis-ci.org/cesarferreira/seguro.svg?branch=master" alt="License"></a>
+  <a href="https://travis-ci.org/cesarferreira/seguro"><img src="https://travis-ci.org/cesarferreira/seguro.svg?branch=master" alt="Build"></a>
+  <a href="https://github.com/cesarferreira/seguro/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+
 </p>
 
 
