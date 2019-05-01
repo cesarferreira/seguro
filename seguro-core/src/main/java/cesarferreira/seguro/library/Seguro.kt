@@ -224,7 +224,7 @@ class Seguro private constructor(
             return this
         }
 
-        fun setEncryptPassword(password: String): Builder {
+        fun setEncryptionPassword(password: String): Builder {
             config.password = password
             return this
         }
@@ -234,7 +234,7 @@ class Seguro private constructor(
             return this
         }
 
-        fun setPersistentType(type: PersistenceType): Builder {
+        fun setPersistenceType(type: PersistenceType): Builder {
             config.persistenceType = type
             return this
         }

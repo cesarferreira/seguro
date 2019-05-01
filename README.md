@@ -1,13 +1,13 @@
-# seguro
-> 🔑 Secure persistence using AES encryption on Android with no dependencies. 
+# seguro 
+> 🔑 Secure persistence (Memory/SharedPreferences/SDCard) using AES+CBC encryption on Android with no dependencies. 
 
 <p align="center">
   <img src="extras/builder.png" width="100%" />
 </p>
 
-<!--<p align="center">
+<p align="center">
   <a href="https://github.com/cesarferreira/seguro/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
-</p>-->
+</p>
 
 
 ## Usage
@@ -15,9 +15,9 @@
 ```kotlin
 seguro = Seguro.Builder()
     .enableEncryption(encryptKey = true, encryptValue = true)
-    .setEncryptPassword("*QdfKPoRE[gC*vtqVxZ2Eg]ZM7TeWnHyYT")
+    .setEncryptionPassword("*QdfKPoRE[gC*vtqVxZ2Eg]ZM7TeWnHyYT")
     .setFolderName(".${BuildConfig.APPLICATION_ID}")
-    .setPersistentType(Seguro.PersistenceType.SDCard)
+    .setPersistenceType(Seguro.PersistenceType.SDCard)
 	//.setPersistentType(Seguro.PersistenceType.InMemory)
 	//.setPersistentType(Seguro.PersistenceType.SharedPreferences(applicationContext))
     .build()

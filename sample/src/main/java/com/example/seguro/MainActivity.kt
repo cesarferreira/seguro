@@ -28,11 +28,11 @@ class MainActivity : AppCompatActivity() {
 
         seguro = Seguro.Builder()
             .enableEncryption(encryptKey = true, encryptValue = true)
-            .setEncryptPassword("Password@123")
+            .setEncryptionPassword("*QdfKPoRE[gC*vtqVxZ2Eg]ZM7TeWnHyYTHU}DuEocJd6QxuZ9WJ")
             .setFolderName(".${BuildConfig.APPLICATION_ID}")
-            .setPersistentType(Seguro.PersistenceType.SDCard)
-//            .setPersistentType(Seguro.PersistenceType.InMemory)
-//            .setPersistentType(Seguro.PersistenceType.SharedPreferences(applicationContext))
+            .setPersistenceType(Seguro.PersistenceType.SDCard)
+//            .setPersistenceType(Seguro.PersistenceType.InMemory)
+//            .setPersistenceType(Seguro.PersistenceType.SharedPreferences(applicationContext))
             .build()
 
         // READ
