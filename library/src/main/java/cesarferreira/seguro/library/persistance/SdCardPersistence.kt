@@ -3,8 +3,7 @@ package cesarferreira.seguro.library.persistance
 import android.os.Environment
 import java.io.File
 
-open class SdCardFileManagerImpl(private val mainDirectoryName: String) :
-    FileManager {
+open class SdCardPersistence(private val mainDirectoryName: String) : PersistenceManager {
 
     @Synchronized
     override fun write(key: String, value: String): Boolean {

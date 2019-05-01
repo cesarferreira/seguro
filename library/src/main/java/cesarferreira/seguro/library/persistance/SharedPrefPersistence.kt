@@ -2,8 +2,7 @@ package cesarferreira.seguro.library.persistance
 
 import android.content.Context
 
-open class SharedPrefFileManagerImpl(context: Context, prefsFileName: String) :
-    FileManager {
+open class SharedPrefPersistence(context: Context, prefsFileName: String) : PersistenceManager {
 
     private val prefs = context.getSharedPreferences(prefsFileName, 0)
 

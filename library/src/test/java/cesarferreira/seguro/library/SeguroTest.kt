@@ -1,7 +1,7 @@
 package cesarferreira.seguro.library
 
 import cesarferreira.seguro.library.encryption.AESEncryptionManager
-import cesarferreira.seguro.library.persistance.FileManager
+import cesarferreira.seguro.library.persistance.PersistenceManager
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import org.amshove.kluent.any
@@ -81,18 +81,18 @@ class SeguroTest {
     }
 
     private fun makeSeguro(
-        fileManagerMock: FileManager,
+        persistenceManagerMock: PersistenceManager,
         customConfig: Seguro.Builder.Config
     ): Seguro {
         val constructor: Constructor<Seguro> = Seguro::class.java.getDeclaredConstructor(
             Seguro.Builder.Config::class.java,
-            FileManager::class.java,
+            PersistenceManager::class.java,
             AESEncryptionManager::class.java
         )
 
         constructor.isAccessible = true
 
-        return constructor.newInstance(customConfig, fileManagerMock, aesEncryptionManager)
+        return constructor.newInstance(customConfig, persistenceManagerMock, aesEncryptionManager)
     }
 
     private fun buildSeguroWithParams(stringToEncrypt: String, testConfig: Seguro.Builder.Config): Seguro {
@@ -103,7 +103,7 @@ class SeguroTest {
             stringToEncrypt
         }
 
-        val fileManagerMock = mock<FileManager> {
+        val fileManagerMock = mock<PersistenceManager> {
             on { read(any()) } doReturn valueFromFile
             on { write(any(), any()) } doReturn true
         }
