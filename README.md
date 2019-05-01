@@ -1,5 +1,8 @@
 # seguro 
-> 🔑 Secure persistence (Memory/SharedPreferences/SDCard) using AES+CBC encryption on Android with no dependencies. 
+
+<p align="center">
+Secure persistence (<strong>Memory/SharedPreferences/SDCard</strong>) using <strong>AES+CBC encryption</strong> on Android with no dependencies. 
+</p>
 
 <p align="center">
   <img src="extras/builder.png" width="100%" />
