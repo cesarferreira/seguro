@@ -4,9 +4,9 @@ import android.os.Environment
 import java.io.File
 import java.io.InputStream
 
-open class SdCardPersistence(private val mainDirectoryName: String) : PersistenceManager {
+open class SdCardPersistence(private val folder: String) : PersistenceManager {
 
-    private val baseDir = File(Environment.getExternalStorageDirectory(), mainDirectoryName)
+    private val baseDir = File(Environment.getExternalStorageDirectory(), folder)
 
     @Synchronized
     override fun write(key: String, value: String): Boolean {
@@ -50,7 +50,7 @@ open class SdCardPersistence(private val mainDirectoryName: String) : Persistenc
     }
 
     private fun createDirectoryIfDoesntExist(): String {
-        val fullDirectory = "$mainDirectoryName/"
+        val fullDirectory = "$folder/"
 
         if (!baseDir.exists() || !baseDir.isDirectory) baseDir.mkdirs()
 
