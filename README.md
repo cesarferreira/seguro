@@ -69,7 +69,7 @@ val age = seguro.getInt("KEY_AGE")      // 31
 ## Install
 
 ```groovy
-TODO
+implementation "cesarferreira:seguro:0.1.0"
 ```
 
 
