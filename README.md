@@ -64,12 +64,24 @@ val age = seguro.getInt("KEY_AGE")      // 31
 
 ## Install
 
+in your main `build.gradle`:
+
+```groovy
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
 ```groovy
 implementation "cesarferreira:seguro:+"
 ```
 
 
 ---------------------
+
 
 Made with ♥ by [Cesar Ferreira](http://cesarferreira.com)
 
