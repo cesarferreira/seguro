@@ -1,5 +1,6 @@
 package cesarferreira.seguro.library.encryption
 
+import android.util.Base64
 import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.crypto.Cipher
@@ -17,7 +18,7 @@ class AESEncryptionManager {
      * @return encrypted plain text in hex
      */
     fun encrypt(password: String, plainText: String): String {
-        return encryptToByteArray(password, plainText).toHex()
+        return encryptToByteArray(password, plainText).encodeBase64()
     }
 
     /**
@@ -28,23 +29,11 @@ class AESEncryptionManager {
      * @return decrypted text
      */
     fun decrypt(password: String, hexEncryptedText: String): String {
-        return decryptFromByteArray(password, hexEncryptedText.hexToByteArray())
+        return decryptFromByteArray(password, hexEncryptedText.decodeBase64())
     }
 
-    private val digits = "0123456789ABCDEF"
-
-    fun ByteArray.toHex(): String {
-        val hexChars = CharArray(this.size * 2)
-        for (i in this.indices) {
-            val v = this[i].toInt() and 0xff
-            hexChars[i * 2] = digits[v shr 4]
-            hexChars[i * 2 + 1] = digits[v and 0xf]
-        }
-        return String(hexChars)
-    }
-
-    private fun String.hexToByteArray() =
-        ByteArray(this.length / 2) { this.substring(it * 2, it * 2 + 2).toInt(16).toByte() }
+    private fun ByteArray.encodeBase64(): String = Base64.encodeToString(this, Base64.DEFAULT)
+    private fun String.decodeBase64(): ByteArray= Base64.decode(this, Base64.DEFAULT)
 
     @Throws(Exception::class)
     private fun encryptToByteArray(key: String, plainText: String): ByteArray {
