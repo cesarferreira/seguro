@@ -1,18 +1,13 @@
 # seguro  [![Build Status](https://travis-ci.org/cesarferreira/seguro.svg?branch=master)](https://travis-ci.org/cesarferreira/seguro) [ ![Download](https://api.bintray.com/packages/cesarferreira/maven/seguro/images/download.svg) ](https://bintray.com/cesarferreira/maven/seguro/_latestVersion)
 
 
-> Secure persistence (<strong>Memory/SharedPreferences/SDCard</strong>) using <strong>AES+CBC encryption</strong> on Android with no dependencies. 
+> Secure persistence using <strong>AES+CBC encryption</strong> on Android with no dependencies. 
 
 <p align="center">
   <img src="extras/builder.png" width="100%" />
 </p>
 
-<p align="center">
-  
-  <a href="https://travis-ci.org/cesarferreira/seguro"><img src="https://travis-ci.org/cesarferreira/seguro.svg?branch=master" alt="Build"></a>
-  <a href="https://github.com/cesarferreira/seguro/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
-
-</p>
+> Can write to <strong>Memory/SharedPreferences/SDCard</strong>
 
 
 ## Usage
