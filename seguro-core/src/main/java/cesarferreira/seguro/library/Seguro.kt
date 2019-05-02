@@ -229,11 +229,6 @@ class Seguro private constructor(
             return this
         }
 
-        fun setFolderName(folderName: String): Builder {
-            config.folderName = folderName
-            return this
-        }
-
         fun setPersistenceType(type: PersistenceType): Builder {
             config.persistenceType = type
             return this
@@ -241,7 +236,7 @@ class Seguro private constructor(
 
         fun build(): Seguro {
             val encryptionManager = AESEncryptionManager()
-            val fileManager = when (config.persistenceType) {
+            val fileManager = when (val persistenceType = config.persistenceType) {
                 is PersistenceType.None -> object :
                     PersistenceManager {
                     override fun write(key: String, value: String): Boolean = true
@@ -249,10 +244,10 @@ class Seguro private constructor(
                     override fun wipe() = true
                 }
                 is PersistenceType.SharedPreferences -> SharedPrefPersistence(
-                    (config.persistenceType as PersistenceType.SharedPreferences).context,
+                    persistenceType.context,
                     BuildConfig.APPLICATION_ID
                 )
-                is PersistenceType.SDCard -> SdCardPersistence(config.folderName)
+                is PersistenceType.SDCard -> SdCardPersistence(persistenceType.destinationFolder)
                 is PersistenceType.InMemory -> InMemoryPersistence()
             }
 
@@ -304,7 +299,7 @@ class Seguro private constructor(
     sealed class PersistenceType {
         object None : PersistenceType()
         data class SharedPreferences(val context: Context) : PersistenceType()
-        object SDCard : PersistenceType()
+        data class SDCard(val destinationFolder: String) : PersistenceType()
         object InMemory : PersistenceType()
     }
 }

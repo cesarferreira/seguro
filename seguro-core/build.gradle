@@ -1,6 +1,26 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.novoda.bintray-release'
+
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.9.1'
+    }
+}
+
+publish {
+    userOrg = 'cesarferreira'
+    groupId = 'cesarferreira'
+    artifactId = 'seguro'
+    publishVersion = '0.1.0'
+    desc = 'Secure persistence using AES encryption on Android with no dependencies.'
+    website = 'https://github.com/cesarferreira/seguro'
+}
 
 android {
     compileSdkVersion 28
