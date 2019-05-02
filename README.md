@@ -1,4 +1,4 @@
-# seguro  [![Build Status](https://travis-ci.org/cesarferreira/seguro.svg?branch=master)](https://travis-ci.org/cesarferreira/seguro) [ ![Download](https://api.bintray.com/packages/cesarferreira/maven/seguro/images/download.svg) ](https://bintray.com/cesarferreira/maven/seguro/_latestVersion)
+# Seguro  [![Build Status](https://travis-ci.org/cesarferreira/seguro.svg?branch=master)](https://travis-ci.org/cesarferreira/seguro) [ ![Download](https://api.bintray.com/packages/cesarferreira/maven/seguro/images/download.svg) ](https://bintray.com/cesarferreira/maven/seguro/_latestVersion)
 
 
 > Secure persistence using <strong>AES+CBC encryption</strong> on Android with no dependencies. 
@@ -75,8 +75,10 @@ allprojects {
 }
 ```
 
+<!-- implementation "cesarferreira:seguro:+" -->
+
 ```groovy
-implementation "cesarferreira:seguro:+"
+implementation 'com.github.cesarferreira:seguro:0.3.0'
 ```
 
 
