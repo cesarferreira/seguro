@@ -33,7 +33,7 @@ class AESEncryptionManager {
 
     private val digits = "0123456789ABCDEF"
 
-    fun ByteArray.toHex(): String {
+    private fun ByteArray.toHex(): String {
         val hexChars = CharArray(this.size * 2)
         for (i in this.indices) {
             val v = this[i].toInt() and 0xff
