@@ -22,56 +22,53 @@ class Seguro private constructor(
     fun clear() = persistenceManager.wipe()
 
     fun getString(key: String): String? {
-        val fromFile = persistenceManager.read(hashKey(key))
-        return fromFile?.let { decryptValue(it) }
+        val hashKey = hashKey(key)
+        val fromFile = persistenceManager.read(hashKey)
+        val decryptedValue = fromFile?.let { decryptValue(it) }
+        if (config.enableLogging) {
+            println("READ[\"$key\"] = $decryptedValue")
+        }
+        return decryptedValue
     }
 
     fun getInt(key: String): Int? {
         try {
             val value = getString(key) ?: return -99
-
             return Integer.parseInt(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Integer data type", e)
             return -99
         }
-
     }
 
     fun getInt(key: String, defaultValue: Int): Int? {
         try {
             val value = getString(key) ?: return defaultValue
-
             return Integer.parseInt(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Integer data type", e)
             return -99
         }
-
     }
 
     fun getFloat(key: String): Float? {
         try {
             val value = getString(key) ?: return 0f
-
             return java.lang.Float.parseFloat(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Float data type", e)
             return 0f
         }
-
     }
 
     fun getFloat(key: String, defaultValue: Float): Float? {
         try {
             val value = getString(key) ?: return defaultValue
-
             return java.lang.Float.parseFloat(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Float data type", e)
             return defaultValue
         }
-
     }
 
     fun getDouble(key: String): Double? {
@@ -82,43 +79,36 @@ class Seguro private constructor(
             throwRunTimeException("Unable to convert to Double data type", e)
             return 0.0
         }
-
     }
 
     fun getDouble(key: String, defaultValue: Double): Double? {
         try {
             val value = getString(key) ?: return defaultValue
-
             return java.lang.Double.parseDouble(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Double data type", e)
             return defaultValue
         }
-
     }
 
     fun getLong(key: String): Long? {
         try {
             val value = getString(key) ?: return 0L
-
             return java.lang.Long.parseLong(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Long data type", e)
             return 0L
         }
-
     }
 
     fun getLong(key: String, defaultValue: Long): Long? {
         try {
             val value = getString(key) ?: return defaultValue
-
             return java.lang.Long.parseLong(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Long data type", e)
             return defaultValue
         }
-
     }
 
     fun getBoolean(key: String): Boolean? {
@@ -134,7 +124,6 @@ class Seguro private constructor(
     fun getBoolean(key: String, defaultValue: Boolean): Boolean? {
         try {
             val value = getString(key) ?: return defaultValue
-
             return java.lang.Boolean.parseBoolean(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Boolean data type", e)
@@ -148,7 +137,14 @@ class Seguro private constructor(
         private var pendingWrites = hashMapOf<String, String>()
 
         fun put(key: String, value: String): Editor {
-            pendingWrites[hashKey(key)] = encryptValue(value)
+            val hashedKey = hashKey(key)
+            val encryptedValue = encryptValue(value)
+
+            if (config.enableLogging) {
+                println("WRITE[\"$key\"] = $encryptedValue")
+            }
+            pendingWrites[hashedKey] = encryptedValue
+
             return this
         }
 
@@ -183,10 +179,7 @@ class Seguro private constructor(
         fun commit() {
 
             // write
-            pendingWrites.forEach {
-                println("key: ${it.key}, value: ${it.value}")
-                persistenceManager.write(it.key, it.value)
-            }
+            pendingWrites.forEach {persistenceManager.write(it.key, it.value) }
 
             // wipe pending writes
             pendingWrites.clear()
@@ -201,6 +194,7 @@ class Seguro private constructor(
             var encryptValue: Boolean = false,
             var password: String = "",
             var folderName: String = "",
+            var enableLogging: Boolean = false,
             var persistenceType: PersistenceType = PersistenceType.InMemory
         )
 
@@ -219,6 +213,11 @@ class Seguro private constructor(
 
         fun setPersistenceType(type: PersistenceType): Builder {
             config.persistenceType = type
+            return this
+        }
+
+        fun enableLogging(shouldLog: Boolean): Builder {
+            config.enableLogging = shouldLog
             return this
         }
 

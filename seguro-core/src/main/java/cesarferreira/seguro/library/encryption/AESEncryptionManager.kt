@@ -16,6 +16,7 @@ class AESEncryptionManager {
      * @param plainText text to encrypt
      * @return encrypted plain text in hex
      */
+    @Throws(Exception::class)
     fun encrypt(password: String, plainText: String): String {
         return encryptToByteArray(password, plainText).toHex()
     }
@@ -27,6 +28,7 @@ class AESEncryptionManager {
      * @param hexEncryptedText encrypted text in hex
      * @return decrypted text
      */
+    @Throws(Exception::class)
     fun decrypt(password: String, hexEncryptedText: String): String {
         return decryptFromByteArray(password, hexEncryptedText.hexToByteArray())
     }

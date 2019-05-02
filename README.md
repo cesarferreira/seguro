@@ -9,13 +9,13 @@
 
 > Can write to <strong>Memory/SharedPreferences/SDCard</strong>
 
-
 ## Usage
 
 ```kotlin
 seguro = Seguro.Builder()
     .enableEncryption(encryptKey = true, encryptValue = true)
     .setEncryptionPassword("*QdfKPoRE[gC*vtqVxZ2Eg]ZM7TeWnHyYT")
+    .enableLogging(true)
     .setPersistenceType(Seguro.PersistenceType.SDCard(".encrypted_secrets")
 	//.setPersistentType(Seguro.PersistenceType.InMemory)
 	//.setPersistentType(Seguro.PersistenceType.SharedPreferences(applicationContext))

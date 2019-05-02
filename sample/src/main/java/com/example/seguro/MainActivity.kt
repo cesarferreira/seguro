@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
             .enableEncryption(encryptKey = true, encryptValue = true)
             .setEncryptionPassword("*QdfKPoRE[gC*vtqVxZ2Eg]ZM7TeWnHyYTHU}DuEocJd6QxuZ9WJ")
             .setPersistenceType(Seguro.PersistenceType.SDCard(".${BuildConfig.APPLICATION_ID}"))
+            .enableLogging(BuildConfig.DEBUG)
 //            .setPersistenceType(Seguro.PersistenceType.InMemory)
 //            .setPersistenceType(Seguro.PersistenceType.SharedPreferences(applicationContext))
             .build()
