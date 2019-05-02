@@ -64,23 +64,20 @@ val age = seguro.getInt("KEY_AGE")      // 31
 
 ## Install
 
-in your main `build.gradle`:
+```groovy
+api "cesarferreira:seguro:+"
+```
+
+in your main `build.gradle`: (while we wait for `jcenter` to accept the library)
 
 ```groovy
 allprojects {
     repositories {
         ...
-        maven { url 'https://jitpack.io' }
+        maven { url 'https://dl.bintray.com/cesarferreira/maven' }
     }
 }
 ```
-
-<!-- implementation "cesarferreira:seguro:+" -->
-
-```groovy
-implementation 'com.github.cesarferreira:seguro:0.3.0'
-```
-
 
 ---------------------
 

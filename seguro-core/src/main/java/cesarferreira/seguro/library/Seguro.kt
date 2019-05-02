@@ -1,7 +1,6 @@
 package cesarferreira.seguro.library
 
 import android.content.Context
-import androidx.annotation.CheckResult
 import cesarferreira.seguro.library.encryption.AESEncryptionManager
 import cesarferreira.seguro.library.persistance.InMemoryPersistence
 import cesarferreira.seguro.library.persistance.PersistenceManager
@@ -22,13 +21,11 @@ class Seguro private constructor(
      */
     fun clear() = persistenceManager.wipe()
 
-    @CheckResult
     fun getString(key: String): String? {
         val fromFile = persistenceManager.read(hashKey(key))
         return fromFile?.let { decryptValue(it) }
     }
 
-    @CheckResult
     fun getInt(key: String): Int? {
         try {
             val value = getString(key) ?: return -99
@@ -41,7 +38,6 @@ class Seguro private constructor(
 
     }
 
-    @CheckResult
     fun getInt(key: String, defaultValue: Int): Int? {
         try {
             val value = getString(key) ?: return defaultValue
@@ -54,7 +50,6 @@ class Seguro private constructor(
 
     }
 
-    @CheckResult
     fun getFloat(key: String): Float? {
         try {
             val value = getString(key) ?: return 0f
@@ -67,7 +62,6 @@ class Seguro private constructor(
 
     }
 
-    @CheckResult
     fun getFloat(key: String, defaultValue: Float): Float? {
         try {
             val value = getString(key) ?: return defaultValue
@@ -80,7 +74,6 @@ class Seguro private constructor(
 
     }
 
-    @CheckResult
     fun getDouble(key: String): Double? {
         try {
             val value = getString(key) ?: return 0.0
@@ -92,7 +85,6 @@ class Seguro private constructor(
 
     }
 
-    @CheckResult
     fun getDouble(key: String, defaultValue: Double): Double? {
         try {
             val value = getString(key) ?: return defaultValue
@@ -105,7 +97,6 @@ class Seguro private constructor(
 
     }
 
-    @CheckResult
     fun getLong(key: String): Long? {
         try {
             val value = getString(key) ?: return 0L
@@ -118,7 +109,6 @@ class Seguro private constructor(
 
     }
 
-    @CheckResult
     fun getLong(key: String, defaultValue: Long): Long? {
         try {
             val value = getString(key) ?: return defaultValue
@@ -131,7 +121,6 @@ class Seguro private constructor(
 
     }
 
-    @CheckResult
     fun getBoolean(key: String): Boolean? {
         return try {
             val value = getString(key)
@@ -142,7 +131,6 @@ class Seguro private constructor(
         }
     }
 
-    @CheckResult
     fun getBoolean(key: String, defaultValue: Boolean): Boolean? {
         try {
             val value = getString(key) ?: return defaultValue

@@ -17,7 +17,7 @@ publish {
     userOrg = 'cesarferreira'
     groupId = 'cesarferreira'
     artifactId = 'seguro'
-    publishVersion = '0.3.0'
+    publishVersion = '0.4.0'
     desc = 'Secure persistence using AES encryption on Android with no dependencies.'
     website = 'https://github.com/cesarferreira/seguro'
 }
@@ -52,8 +52,6 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-
-    implementation 'androidx.appcompat:appcompat:1.0.2'
 
     // test
     testImplementation 'junit:junit:4.12'
