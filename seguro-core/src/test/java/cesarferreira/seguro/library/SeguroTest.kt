@@ -2,7 +2,7 @@ package cesarferreira.seguro.library
 
 import cesarferreira.seguro.library.encryption.AESEncryptionManager
 import cesarferreira.seguro.library.persistence.InMemoryPersistence
-import cesarferreira.seguro.library.persistence.PersistenceManager
+import cesarferreira.seguro.library.persistence.IPersistenceManager
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.lang.reflect.Constructor
@@ -17,7 +17,7 @@ class SeguroTest {
         folderName = ".com.example.seguro",
         password = "password123",
         enableLogging = true,
-        persistenceType = Seguro.PersistenceType.InMemory
+        enabledCacheTypes = Seguro.PersistenceType.InMemory
     )
 
     private val aesEncryptionManager = AESEncryptionManager()
@@ -114,7 +114,7 @@ class SeguroTest {
 
         val constructor: Constructor<Seguro> = Seguro::class.java.getDeclaredConstructor(
             Seguro.Builder.Config::class.java,
-            PersistenceManager::class.java,
+            IPersistenceManager::class.java,
             AESEncryptionManager::class.java
         )
 
