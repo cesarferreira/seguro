@@ -37,5 +37,4 @@ dependencies {
     debugImplementation 'com.willowtreeapps.hyperion:hyperion-core:0.9.27'
     debugImplementation 'com.willowtreeapps.hyperion:hyperion-shared-preferences:0.9.27'
     debugImplementation 'com.willowtreeapps.hyperion:hyperion-disk:0.9.27'
-
 }
