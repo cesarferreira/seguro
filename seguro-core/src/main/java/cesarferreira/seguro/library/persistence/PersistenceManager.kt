@@ -1,4 +1,4 @@
-package cesarferreira.seguro.library.persistance
+package cesarferreira.seguro.library.persistence
 
 interface PersistenceManager {
     fun write(key: String, value: String): Boolean

@@ -1,8 +1,8 @@
 package cesarferreira.seguro.library
 
 import cesarferreira.seguro.library.encryption.AESEncryptionManager
-import cesarferreira.seguro.library.persistance.InMemoryPersistence
-import cesarferreira.seguro.library.persistance.PersistenceManager
+import cesarferreira.seguro.library.persistence.InMemoryPersistence
+import cesarferreira.seguro.library.persistence.PersistenceManager
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.lang.reflect.Constructor

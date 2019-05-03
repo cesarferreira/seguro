@@ -2,10 +2,10 @@ package cesarferreira.seguro.library
 
 import android.content.Context
 import cesarferreira.seguro.library.encryption.AESEncryptionManager
-import cesarferreira.seguro.library.persistance.InMemoryPersistence
-import cesarferreira.seguro.library.persistance.PersistenceManager
-import cesarferreira.seguro.library.persistance.SdCardPersistence
-import cesarferreira.seguro.library.persistance.SharedPrefPersistence
+import cesarferreira.seguro.library.persistence.InMemoryPersistence
+import cesarferreira.seguro.library.persistence.PersistenceManager
+import cesarferreira.seguro.library.persistence.SdCardPersistence
+import cesarferreira.seguro.library.persistence.SharedPrefPersistence
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 

@@ -1,4 +1,4 @@
-package cesarferreira.seguro.library.persistance
+package cesarferreira.seguro.library.persistence
 
 import android.os.Environment
 import java.io.File
