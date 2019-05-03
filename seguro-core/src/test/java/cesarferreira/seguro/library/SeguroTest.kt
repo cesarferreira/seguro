@@ -16,6 +16,7 @@ class SeguroTest {
         encryptValue = false,
         folderName = ".com.example.seguro",
         password = "password123",
+        enableLogging = true,
         persistenceType = Seguro.PersistenceType.InMemory
     )
 
@@ -62,9 +63,9 @@ class SeguroTest {
             .commit()
 
         // THEN
-        seguro.getLong(KEY_TIME) shouldEqual time
+        seguro.getLong(KEY_TIME, -1L) shouldEqual time
         seguro.getString(KEY_NAME) shouldEqual name
-        seguro.getInt(KEY_AGE) shouldEqual age
+        seguro.getInt(KEY_AGE, -1) shouldEqual age
 
     }
 

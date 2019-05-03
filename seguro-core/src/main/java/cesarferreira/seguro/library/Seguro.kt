@@ -31,35 +31,16 @@ class Seguro private constructor(
         return decryptedValue
     }
 
-    fun getInt(key: String): Int? {
-        try {
-            val value = getString(key) ?: return -99
-            return Integer.parseInt(value)
-        } catch (e: Exception) {
-            throwRunTimeException("Unable to convert to Integer data type", e)
-            return -99
-        }
-    }
-
     fun getInt(key: String, defaultValue: Int): Int? {
         try {
             val value = getString(key) ?: return defaultValue
             return Integer.parseInt(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Integer data type", e)
-            return -99
+            return null
         }
     }
 
-    fun getFloat(key: String): Float? {
-        try {
-            val value = getString(key) ?: return 0f
-            return java.lang.Float.parseFloat(value)
-        } catch (e: Exception) {
-            throwRunTimeException("Unable to convert to Float data type", e)
-            return 0f
-        }
-    }
 
     fun getFloat(key: String, defaultValue: Float): Float? {
         try {
@@ -68,16 +49,6 @@ class Seguro private constructor(
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Float data type", e)
             return defaultValue
-        }
-    }
-
-    fun getDouble(key: String): Double? {
-        try {
-            val value = getString(key) ?: return 0.0
-            return java.lang.Double.parseDouble(value)
-        } catch (e: Exception) {
-            throwRunTimeException("Unable to convert to Double data type", e)
-            return 0.0
         }
     }
 
@@ -91,16 +62,6 @@ class Seguro private constructor(
         }
     }
 
-    fun getLong(key: String): Long? {
-        try {
-            val value = getString(key) ?: return 0L
-            return java.lang.Long.parseLong(value)
-        } catch (e: Exception) {
-            throwRunTimeException("Unable to convert to Long data type", e)
-            return 0L
-        }
-    }
-
     fun getLong(key: String, defaultValue: Long): Long? {
         try {
             val value = getString(key) ?: return defaultValue
@@ -111,23 +72,13 @@ class Seguro private constructor(
         }
     }
 
-    fun getBoolean(key: String): Boolean? {
-        return try {
-            val value = getString(key)
-            value != null && java.lang.Boolean.parseBoolean(value)
-        } catch (e: Exception) {
-            throwRunTimeException("Unable to convert to Boolean data type", e)
-            false
-        }
-    }
-
     fun getBoolean(key: String, defaultValue: Boolean): Boolean? {
         try {
             val value = getString(key) ?: return defaultValue
             return java.lang.Boolean.parseBoolean(value)
         } catch (e: Exception) {
             throwRunTimeException("Unable to convert to Boolean data type", e)
-            return false
+            return null
         }
     }
 

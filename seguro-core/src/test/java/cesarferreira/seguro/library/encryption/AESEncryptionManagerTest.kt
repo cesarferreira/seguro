@@ -51,6 +51,7 @@ class AESEncryptionManagerTest {
         assertEquals(originalText, encryptionManager.decrypt(password, encrypted1))
         assertEquals(originalText, encryptionManager.decrypt(password, encrypted2))
         assertEquals(originalText, encryptionManager.decrypt(password, encrypted3))
+
         assertTrue(
             "They should all be different",
             (encrypted1 != encrypted2 && encrypted2 != encrypted3 && encrypted1 != encrypted3)
