@@ -1,23 +1,25 @@
 package cesarferreira.seguro.library
 
 import cesarferreira.seguro.library.encryption.AESEncryptionManager
-import cesarferreira.seguro.library.persistence.InMemoryPersistence
 import cesarferreira.seguro.library.persistence.IPersistenceManager
+import cesarferreira.seguro.library.persistence.InMemoryPersistence
+import cesarferreira.seguro.library.persistence.PersistenceType
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.lang.reflect.Constructor
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class SeguroTest {
 
     private val defaultConfig = Seguro.Builder.Config(
-        encryptKey = false,
-        encryptValue = false,
-        folderName = ".com.example.seguro",
-        password = "password123",
-        enableLogging = true,
-        enabledCacheTypes = Seguro.PersistenceType.InMemory
+            encryptKey = false,
+            encryptValue = false,
+            folderName = ".com.example.seguro",
+            password = "password123",
+            enableLogging = true,
+            enabledCacheTypes = arrayListOf(PersistenceType.InMemory)
     )
 
     private val aesEncryptionManager = AESEncryptionManager()
@@ -57,10 +59,10 @@ class SeguroTest {
 
         // WHEN
         seguro.Editor()
-            .put(KEY_TIME, time)
-            .put(KEY_NAME, name)
-            .put(KEY_AGE, age)
-            .commit()
+                .put(KEY_TIME, time)
+                .put(KEY_NAME, name)
+                .put(KEY_AGE, age)
+                .commit()
 
         // THEN
         seguro.getLong(KEY_TIME, -1L) shouldEqual time
@@ -110,13 +112,14 @@ class SeguroTest {
 
     private fun buildSeguroWithParams(testConfig: Seguro.Builder.Config): Seguro {
 
-        val persistenceManagerMock = InMemoryPersistence()
+        val persistenceManagerMock = arrayListOf(InMemoryPersistence())
 
-        val constructor: Constructor<Seguro> = Seguro::class.java.getDeclaredConstructor(
-            Seguro.Builder.Config::class.java,
-            IPersistenceManager::class.java,
-            AESEncryptionManager::class.java
-        )
+        val constructor: Constructor<Seguro> =
+                Seguro::class.java.getDeclaredConstructor(
+                        Seguro.Builder.Config::class.java,
+                        ArrayList::class.java,
+                        AESEncryptionManager::class.java
+                )
 
         constructor.isAccessible = true
 

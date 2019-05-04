@@ -22,7 +22,7 @@ class Seguro private constructor(
 
         val hashKey = getHashedKey(key)
 
-        val fromFile = getStringFrom(hashKey)
+        val fromFile = lookForCacheHit(hashKey)
         val decryptedValue = fromFile?.let { decryptValue(it) }
 
         log("READ[\"$key\"] = $decryptedValue")
@@ -32,23 +32,33 @@ class Seguro private constructor(
 
     private fun log(str: String) = if (config.enableLogging) println(str) else Unit
 
-    private fun getStringFrom(key: String): String? {
+    private fun lookForCacheHit(hashedKey: String): String? {
 
         var foundIt: String? = null
         var foundItAtPosition = -1
+        var value: String? = null
 
-        caches.forEachIndexed { index, cache ->
-            val result = cache.read(key)
-            if (result != null) {
-                foundIt = result
-                foundItAtPosition = index
-                return@forEachIndexed
+        run loop@{
+
+            caches.forEachIndexed { index, cache ->
+
+                log("looking for it at: ${caches[index].persistenceName()}")
+
+                value = cache.read(hashedKey)
+                if (value != null) {
+                    foundIt = value
+                    foundItAtPosition = index
+                    log("FFFFFFFound it at ${caches[foundItAtPosition].persistenceName()}")
+                    return@loop
+                }
             }
         }
 
         if (foundIt != null) {
             // cache HIT
             log("Found it at ${caches[foundItAtPosition].persistenceName()}")
+
+            this@Seguro.Editor().put(hashedKey, value!!).commit()
         } else {
             // cache MISS
             log("Could not find it")
@@ -114,12 +124,10 @@ class Seguro private constructor(
         private var pendingWrites = hashMapOf<String, String>()
 
         fun put(key: String, value: String): Editor {
+            if (config.enableLogging) log("WRITE[\"$key\"] = $value")
             val hashedKey = getHashedKey(key)
             val encryptedValue = encryptValue(value)
 
-            if (config.enableLogging) {
-                log("WRITE[\"$key\"] = $encryptedValue")
-            }
             pendingWrites[hashedKey] = encryptedValue
 
             return this
@@ -156,7 +164,12 @@ class Seguro private constructor(
         fun commit() {
 
             // write
-            pendingWrites.forEach { pending -> caches.forEach { it.write(pending.key, pending.value) } }
+            pendingWrites.forEach { pending ->
+                caches.forEach {
+                    log("Writing to: ${it.persistenceName()}, key: ${pending.key}")
+                    it.write(pending.key, pending.value)
+                }
+            }
 
             // wipe pending writes
             pendingWrites.clear()
@@ -172,7 +185,7 @@ class Seguro private constructor(
                 var password: String = "",
                 var folderName: String = "",
                 var enableLogging: Boolean = false,
-                var enabledCacheTypes: ArrayList<PersistenceType> = arrayListOf(PersistenceType.InMemory)
+                var enabledCacheTypes: ArrayList<PersistenceType> = arrayListOf()
         )
 
         private val config = Config()
@@ -203,20 +216,18 @@ class Seguro private constructor(
 
             val caches: ArrayList<IPersistenceManager> = arrayListOf()
 
+            if (config.enabledCacheTypes.isEmpty()) config.enabledCacheTypes.add(PersistenceType.InMemory)
+
             config.enabledCacheTypes.forEach {
 
                 val persistence = when (it) {
-                    is PersistenceType.None -> object :
-                            IPersistenceManager {
+                    is PersistenceType.None -> object : IPersistenceManager {
                         override fun persistenceName(): String = "None"
                         override fun write(key: String, value: String): Boolean = true
                         override fun read(key: String): String? = null
                         override fun wipe() = true
                     }
-                    is PersistenceType.SharedPreferences -> SharedPrefPersistence(
-                            it.context,
-                            BuildConfig.APPLICATION_ID
-                    )
+                    is PersistenceType.SharedPreferences -> SharedPrefPersistence(it.context, BuildConfig.APPLICATION_ID)
                     is PersistenceType.SDCard -> SdCardPersistence(it.destinationFolder)
                     is PersistenceType.InMemory -> InMemoryPersistence()
                 }

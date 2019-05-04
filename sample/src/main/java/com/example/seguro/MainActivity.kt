@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
             .setEncryptionPassword("*QdfKPoRE[gC*vtqVxZ2Eg]ZM7TeWnHyYTHU}DuEocJd6QxuZ9WJ")
             .addPersistence(PersistenceType.InMemory)
             .addPersistence(PersistenceType.SharedPreferences(applicationContext))
-//            .addPersistence(PersistenceType.SDCard(".${BuildConfig.APPLICATION_ID}"))
+            .addPersistence(PersistenceType.SDCard(".${BuildConfig.APPLICATION_ID}"))
             .enableLogging(BuildConfig.DEBUG)
             .build()
 
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
             seguro.Editor()
                 .put(TIME_KEY, Date().time)
-                .put(NAME_KEY, "Cesar Ferreira")
+//                .put(NAME_KEY, "Cesar Ferreira")
                 .commit()
 
             timeDelta.finish()
