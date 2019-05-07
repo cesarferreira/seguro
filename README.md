@@ -68,17 +68,6 @@ val age = seguro.getInt("KEY_AGE")      // 31
 api "com.cesarferreira:seguro:+"
 ```
 
-in your main `build.gradle`: (while we wait for `jcenter` to accept the library)
-
-```groovy
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://dl.bintray.com/cesarferreira/maven' }
-    }
-}
-```
-
 ---------------------
 
 
