@@ -16,9 +16,9 @@ seguro = Seguro.Builder()
     .enableEncryption(encryptKey = true, encryptValue = true)
     .setEncryptionPassword("*QdfKPoRE[gC*vtqVxZ2Eg]ZM7TeWnHyYT")
     .enableLogging(true)
-    .setPersistenceType(Seguro.PersistenceType.SDCard(".encrypted_secrets")
-	//.setPersistentType(Seguro.PersistenceType.InMemory)
-	//.setPersistentType(Seguro.PersistenceType.SharedPreferences(applicationContext))
+    .setPersistenceType(Seguro.PersistenceType.SDCard(".encrypted_secrets"))
+	//.setPersistenceType(Seguro.PersistenceType.InMemory)
+	//.setPersistenceType(Seguro.PersistenceType.SharedPreferences(applicationContext))
     .build()
 ```
 
