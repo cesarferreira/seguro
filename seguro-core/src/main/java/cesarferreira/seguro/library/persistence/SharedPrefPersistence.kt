@@ -2,9 +2,11 @@ package cesarferreira.seguro.library.persistence
 
 import android.content.Context
 
-open class SharedPrefPersistence(context: Context, prefsFileName: String) : PersistenceManager {
+open class SharedPrefPersistence(context: Context, prefsFileName: String) : IPersistenceManager {
 
     private val prefs = context.getSharedPreferences(prefsFileName, 0)
+
+    override fun persistenceName(): String = "SharedPrefPersistence"
 
     @Synchronized
     override fun write(key: String, value: String) = prefs.edit().putString(key, value).commit()

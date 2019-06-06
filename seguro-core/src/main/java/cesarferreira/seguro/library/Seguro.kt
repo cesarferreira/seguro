@@ -1,35 +1,72 @@
 package cesarferreira.seguro.library
 
-import android.content.Context
 import cesarferreira.seguro.library.encryption.AESEncryptionManager
-import cesarferreira.seguro.library.persistence.InMemoryPersistence
-import cesarferreira.seguro.library.persistence.PersistenceManager
-import cesarferreira.seguro.library.persistence.SdCardPersistence
-import cesarferreira.seguro.library.persistence.SharedPrefPersistence
+import cesarferreira.seguro.library.persistence.*
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 
 class Seguro private constructor(
-    private val config: Builder.Config,
-    private val persistenceManager: PersistenceManager,
-    private val encryptionManager: AESEncryptionManager
+        private val config: Builder.Config,
+        private val caches: ArrayList<IPersistenceManager>,
+        private val encryptionManager: AESEncryptionManager
 ) {
 
     /**
      * Wipes everything from persistence
      */
-    fun clear() = persistenceManager.wipe()
+    fun clear() = caches.forEach { it.wipe() }
 
     fun getString(key: String): String? {
-        val hashKey = hashKey(key)
-        val fromFile = persistenceManager.read(hashKey)
+        log("Looking for: $key")
+
+        val hashKey = getHashedKey(key)
+
+        val fromFile = lookForCacheHit(hashKey)
         val decryptedValue = fromFile?.let { decryptValue(it) }
-        if (config.enableLogging) {
-            println("READ[\"$key\"] = $decryptedValue")
-        }
+
+        log("READ[\"$key\"] = $decryptedValue")
+
         return decryptedValue
     }
+
+    private fun log(str: String) = if (config.enableLogging) println(str) else Unit
+
+    private fun lookForCacheHit(hashedKey: String): String? {
+
+        var foundIt: String? = null
+        var foundItAtPosition = -1
+        var value: String? = null
+
+        run loop@{
+
+            caches.forEachIndexed { index, cache ->
+
+                log("looking for it at: ${caches[index].persistenceName()}")
+
+                value = cache.read(hashedKey)
+                if (value != null) {
+                    foundIt = value
+                    foundItAtPosition = index
+                    log("FFFFFFFound it at ${caches[foundItAtPosition].persistenceName()}")
+                    return@loop
+                }
+            }
+        }
+
+        if (foundIt != null) {
+            // cache HIT
+            log("Found it at ${caches[foundItAtPosition].persistenceName()}")
+
+            this@Seguro.Editor().put(hashedKey, value!!).commit()
+        } else {
+            // cache MISS
+            log("Could not find it")
+        }
+
+        return foundIt
+    }
+
 
     fun getInt(key: String, defaultValue: Int): Int? {
         try {
@@ -40,7 +77,6 @@ class Seguro private constructor(
             return null
         }
     }
-
 
     fun getFloat(key: String, defaultValue: Float): Float? {
         try {
@@ -88,12 +124,10 @@ class Seguro private constructor(
         private var pendingWrites = hashMapOf<String, String>()
 
         fun put(key: String, value: String): Editor {
-            val hashedKey = hashKey(key)
+            if (config.enableLogging) log("WRITE[\"$key\"] = $value")
+            val hashedKey = getHashedKey(key)
             val encryptedValue = encryptValue(value)
 
-            if (config.enableLogging) {
-                println("WRITE[\"$key\"] = $encryptedValue")
-            }
             pendingWrites[hashedKey] = encryptedValue
 
             return this
@@ -130,7 +164,12 @@ class Seguro private constructor(
         fun commit() {
 
             // write
-            pendingWrites.forEach {persistenceManager.write(it.key, it.value) }
+            pendingWrites.forEach { pending ->
+                caches.forEach {
+                    log("Writing to: ${it.persistenceName()}, key: ${pending.key}")
+                    it.write(pending.key, pending.value)
+                }
+            }
 
             // wipe pending writes
             pendingWrites.clear()
@@ -141,12 +180,12 @@ class Seguro private constructor(
     class Builder {
 
         internal data class Config(
-            var encryptKey: Boolean = false,
-            var encryptValue: Boolean = false,
-            var password: String = "",
-            var folderName: String = "",
-            var enableLogging: Boolean = false,
-            var persistenceType: PersistenceType = PersistenceType.InMemory
+                var encryptKey: Boolean = false,
+                var encryptValue: Boolean = false,
+                var password: String = "",
+                var folderName: String = "",
+                var enableLogging: Boolean = false,
+                var enabledCacheTypes: ArrayList<PersistenceType> = arrayListOf()
         )
 
         private val config = Config()
@@ -162,8 +201,8 @@ class Seguro private constructor(
             return this
         }
 
-        fun setPersistenceType(type: PersistenceType): Builder {
-            config.persistenceType = type
+        fun addPersistence(type: PersistenceType): Builder {
+            config.enabledCacheTypes.add(type)
             return this
         }
 
@@ -174,22 +213,29 @@ class Seguro private constructor(
 
         fun build(): Seguro {
             val encryptionManager = AESEncryptionManager()
-            val fileManager = when (val persistenceType = config.persistenceType) {
-                is PersistenceType.None -> object :
-                    PersistenceManager {
-                    override fun write(key: String, value: String): Boolean = true
-                    override fun read(key: String): String? = null
-                    override fun wipe() = true
+
+            val caches: ArrayList<IPersistenceManager> = arrayListOf()
+
+            if (config.enabledCacheTypes.isEmpty()) config.enabledCacheTypes.add(PersistenceType.InMemory)
+
+            config.enabledCacheTypes.forEach {
+
+                val persistence = when (it) {
+                    is PersistenceType.None -> object : IPersistenceManager {
+                        override fun persistenceName(): String = "None"
+                        override fun write(key: String, value: String): Boolean = true
+                        override fun read(key: String): String? = null
+                        override fun wipe() = true
+                    }
+                    is PersistenceType.SharedPreferences -> SharedPrefPersistence(it.context, BuildConfig.APPLICATION_ID)
+                    is PersistenceType.SDCard -> SdCardPersistence(it.destinationFolder)
+                    is PersistenceType.InMemory -> InMemoryPersistence()
                 }
-                is PersistenceType.SharedPreferences -> SharedPrefPersistence(
-                    persistenceType.context,
-                    BuildConfig.APPLICATION_ID
-                )
-                is PersistenceType.SDCard -> SdCardPersistence(persistenceType.destinationFolder)
-                is PersistenceType.InMemory -> InMemoryPersistence()
+
+                caches.add(persistence)
             }
 
-            return Seguro(config, fileManager, encryptionManager)
+            return Seguro(config, caches, encryptionManager)
         }
     }
 
@@ -209,7 +255,7 @@ class Seguro private constructor(
         }
     }
 
-    private fun hashKey(key: String): String {
+    private fun getHashedKey(key: String): String {
         if (config.encryptKey) {
             try {
                 val HEX_CHARS = "0123456789ABCDEF"
@@ -232,12 +278,7 @@ class Seguro private constructor(
     }
 
     private fun throwRunTimeException(message: String, throwable: Throwable) =
-        RuntimeException(message, throwable).printStackTrace()
+            RuntimeException(message, throwable).printStackTrace()
 
-    sealed class PersistenceType {
-        object None : PersistenceType()
-        data class SharedPreferences(val context: Context) : PersistenceType()
-        data class SDCard(val destinationFolder: String) : PersistenceType()
-        object InMemory : PersistenceType()
-    }
 }
+

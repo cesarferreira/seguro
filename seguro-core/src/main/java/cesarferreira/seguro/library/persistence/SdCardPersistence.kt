@@ -4,9 +4,11 @@ import android.os.Environment
 import java.io.File
 import java.io.InputStream
 
-open class SdCardPersistence(private val folder: String) : PersistenceManager {
+open class SdCardPersistence(private val folder: String) : IPersistenceManager {
 
     private val baseDir = File(Environment.getExternalStorageDirectory(), folder)
+
+    override fun persistenceName(): String = "SdCardPersistence"
 
     @Synchronized
     override fun write(key: String, value: String): Boolean {

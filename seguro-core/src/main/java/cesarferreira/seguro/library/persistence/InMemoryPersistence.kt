@@ -1,8 +1,10 @@
 package cesarferreira.seguro.library.persistence
 
-open class InMemoryPersistence : PersistenceManager {
+open class InMemoryPersistence : IPersistenceManager {
 
     private var map = HashMap<String, String>()
+
+    override fun persistenceName(): String = "InMemoryPersistence"
 
     @Synchronized
     override fun write(key: String, value: String): Boolean {

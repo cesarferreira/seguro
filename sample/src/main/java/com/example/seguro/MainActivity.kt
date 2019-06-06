@@ -6,12 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import cesarferreira.seguro.library.Seguro
+import cesarferreira.seguro.library.persistence.PersistenceType
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import kotlinx.android.synthetic.main.activity_main.*
+import java.text.DateFormat
 import java.util.*
 
 
@@ -24,32 +26,33 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        addToLog("onCreate")
+
         checkPermissions()
 
         seguro = Seguro.Builder()
             .enableEncryption(encryptKey = true, encryptValue = true)
             .setEncryptionPassword("*QdfKPoRE[gC*vtqVxZ2Eg]ZM7TeWnHyYTHU}DuEocJd6QxuZ9WJ")
-            .setPersistenceType(Seguro.PersistenceType.SDCard(".${BuildConfig.APPLICATION_ID}"))
+            .addPersistence(PersistenceType.InMemory)
+            .addPersistence(PersistenceType.SharedPreferences(applicationContext))
+            .addPersistence(PersistenceType.SDCard(".${BuildConfig.APPLICATION_ID}"))
             .enableLogging(BuildConfig.DEBUG)
-//            .setPersistenceType(Seguro.PersistenceType.InMemory)
-//            .setPersistenceType(Seguro.PersistenceType.SharedPreferences(applicationContext))
             .build()
 
         // READ
         readButton.setOnClickListener {
 
             val timeDelta = TimeDelta()
-            val result = seguro.getString(TIME_KEY) ?: "cant find the TIME"
+            val result = seguro.getString(TIME_KEY) ?: "cant find the value"
             timeDelta.finish()
 
             Log.d("TIME", "READ: " + timeDelta.delta.toString() + " ms")
 
-            textView.text = ""
-            textView.text = result
+            addToLog(result)
         }
 
         wipeButton.setOnClickListener {
-            textView.text = "all data wiped"
+            addToLog("all data wiped")
             seguro.clear()
         }
 
@@ -60,15 +63,20 @@ class MainActivity : AppCompatActivity() {
 
             seguro.Editor()
                 .put(TIME_KEY, Date().time)
-                .put(NAME_KEY, "Cesar Ferreira")
+//                .put(NAME_KEY, "Cesar Ferreira")
                 .commit()
 
             timeDelta.finish()
 
             Log.d("TIME", "WRITE: " + timeDelta.delta.toString() + " ms")
 
-            textView.text = "I WROTE TO PERSISTENCE"
+            addToLog("I WROTE TO PERSISTENCE")
         }
+    }
+
+    private fun addToLog(newLine: String) {
+        val date = DateFormat.getTimeInstance().format(Date())
+        textView.append("$date: $newLine\n")
     }
 
     private fun checkPermissions() {
