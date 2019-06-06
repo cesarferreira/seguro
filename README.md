@@ -62,6 +62,16 @@ val name = seguro.getString("KEY_NAME") // "Cesar Ferreira"
 val age = seguro.getInt("KEY_AGE")      // 31
 ```
 
+## Delete:
+
+```kotlin
+seguro.Editor()
+    .delete("KEY_NAME")
+    .commit()
+  
+val name : String? = seguro.getString("KEY_NAME")      // null
+```
+
 ## Install
 
 ```groovy

@@ -4,6 +4,8 @@ open class InMemoryPersistence : PersistenceManager {
 
     private var map = HashMap<String, String>()
 
+    override fun persistenceName(): String = "InMemoryPersistence"
+
     @Synchronized
     override fun write(key: String, value: String): Boolean {
         map[key] = value
@@ -17,6 +19,12 @@ open class InMemoryPersistence : PersistenceManager {
     override fun wipe(): Boolean {
         map.clear()
         return true
+    }
+
+    @Synchronized
+    override fun delete(key: String): Boolean {
+        map.remove(key)
+        return !map.containsKey(key)
     }
 
 }
