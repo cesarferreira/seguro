@@ -6,6 +6,16 @@ import java.io.InputStream
 
 open class SdCardPersistence(private val folder: String) : PersistenceManager {
 
+    @Synchronized
+    override fun delete(key: String): Boolean {
+        val fileByKey = getFileByKey(key)
+        fileByKey.delete()
+
+        return !fileByKey.exists()
+    }
+
+    override fun persistenceName(): String = "SdCardPersistence"
+
     private val baseDir = File(Environment.getExternalStorageDirectory(), folder)
 
     @Synchronized

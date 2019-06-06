@@ -25,9 +25,7 @@ class Seguro private constructor(
         val hashKey = hashKey(key)
         val fromFile = persistenceManager.read(hashKey)
         val decryptedValue = fromFile?.let { decryptValue(it) }
-        if (config.enableLogging) {
-            println("READ[\"$key\"] = $decryptedValue")
-        }
+        log("READ[\"$key\"] = $decryptedValue")
         return decryptedValue
     }
 
@@ -91,9 +89,7 @@ class Seguro private constructor(
             val hashedKey = hashKey(key)
             val encryptedValue = encryptValue(value)
 
-            if (config.enableLogging) {
-                println("WRITE[\"$key\"] = $encryptedValue")
-            }
+            log("WRITE[\"$key\"] = $encryptedValue")
             pendingWrites[hashedKey] = encryptedValue
 
             return this
@@ -127,10 +123,16 @@ class Seguro private constructor(
             return put(key, String(bytes))
         }
 
+        fun delete(key: String): Editor {
+            val hashKey = hashKey(key)
+            persistenceManager.delete(hashKey)
+            return this
+        }
+
         fun commit() {
 
             // write
-            pendingWrites.forEach {persistenceManager.write(it.key, it.value) }
+            pendingWrites.forEach { persistenceManager.write(it.key, it.value) }
 
             // wipe pending writes
             pendingWrites.clear()
@@ -177,6 +179,8 @@ class Seguro private constructor(
             val fileManager = when (val persistenceType = config.persistenceType) {
                 is PersistenceType.None -> object :
                     PersistenceManager {
+                    override fun delete(key: String): Boolean = false
+                    override fun persistenceName(): String = ""
                     override fun write(key: String, value: String): Boolean = true
                     override fun read(key: String): String? = null
                     override fun wipe() = true
@@ -230,6 +234,9 @@ class Seguro private constructor(
 
         return key
     }
+
+    private fun log(str: String) = if (config.enableLogging) println(str) else Unit
+
 
     private fun throwRunTimeException(message: String, throwable: Throwable) =
         RuntimeException(message, throwable).printStackTrace()
